@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="vn.seedcom.fgcart">
-   <application
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
         android:label="fgcart"
         android:icon="@mipmap/ic_launcher">
         <activity
