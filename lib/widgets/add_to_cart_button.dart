@@ -21,9 +21,13 @@ class AddToCartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => _addToCart(context),
-      child: Text(text ?? 'Add $id'),
+    final api = context.watch<HrvApi>();
+    return AnimatedBuilder(
+      animation: api.isLoading,
+      builder: (_, __) => ElevatedButton(
+        onPressed: api.isLoading.value ? null : () => _addToCart(context),
+        child: Text(text ?? '$id'),
+      ),
     );
   }
 

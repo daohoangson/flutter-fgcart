@@ -7,7 +7,7 @@ part 'model.g.dart';
 class Cart with _$Cart {
   factory Cart({
     @Default({}) Map<String, String> attributes,
-    @Default('') String token,
+    String? token,
     @Default(0) int itemCount,
     @Default([]) List<CartItem> items,
     @Default(0) int totalPrice,

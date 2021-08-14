@@ -14,6 +14,7 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   flutter:
     sdk: flutter
+  flutter_palette: ^1.1.0+1
   flutter_widget_from_html_core: ^0.6.2
   freezed_annotation: ^0.14.2
   provider: ^5.0.0

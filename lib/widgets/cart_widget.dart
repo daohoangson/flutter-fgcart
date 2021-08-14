@@ -5,30 +5,43 @@ import 'package:provider/provider.dart';
 
 import 'cart_item_widget.dart';
 
-class CartWidget extends StatefulWidget {
+class CartWidget extends StatelessWidget {
   const CartWidget({Key? key}) : super(key: key);
 
   @override
-  _CartWidgetState createState() => _CartWidgetState();
+  Widget build(BuildContext context) {
+    final api = context.read<HrvApi>();
+    return AnimatedBuilder(
+      animation: Listenable.merge([api.cart, api.isLoading]),
+      builder: (context, _) => _CartWidget(
+        api.cart.value,
+        isLoading: api.isLoading.value,
+      ),
+    );
+  }
 }
 
-class _CartWidgetState extends State<CartWidget> {
-  var _cart = Cart();
+class _CartWidget extends StatelessWidget {
+  final Cart cart;
+  final bool isLoading;
+
+  const _CartWidget(this.cart, {required this.isLoading, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ListTile(
-          title: Text(_cart.token),
+          title: Text(cart.token ?? 'N/A'),
           subtitle: const Text('token'),
         ),
-        ..._cart.groups.map((group) => Column(
+        ...cart.groups.map((group) => Column(
               children: [
                 if (group is CartOutfit)
                   ListTile(
                     title: Text(
-                      'Outfit ${group.id}',
+                      'Outfit=${group.id}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headline6,
@@ -38,22 +51,15 @@ class _CartWidgetState extends State<CartWidget> {
               ],
             )),
         ListTile(
-          title: Text('${_cart.totalPrice}'),
+          title: isLoading
+              ? const Align(
+                  alignment: Alignment.topLeft,
+                  child: CircularProgressIndicator.adaptive(),
+                )
+              : Text('${cart.totalPrice}'),
           subtitle: const Text('total_price'),
-        ),
-        TextButton(
-          onPressed: () => _refresh(),
-          child: const Text('Refresh'),
         ),
       ],
     );
-  }
-
-  Future<void> _refresh() async {
-    final api = context.read<HrvApi>();
-    final cart = await api.cart;
-    if (mounted) {
-      setState(() => _cart = cart);
-    }
   }
 }

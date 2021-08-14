@@ -1,6 +1,7 @@
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/material.dart';
 
 import 'config.dart';
 import 'model.dart';
@@ -8,7 +9,9 @@ import 'model.dart';
 class HrvApi {
   static Interceptor? logInterceptor;
 
+  final cart = ValueNotifier(Cart());
   final HrvConfig config;
+  final isLoading = ValueNotifier(false);
 
   late final CookieJar _cookieJar;
   late final Dio _dio;
@@ -24,7 +27,33 @@ class HrvApi {
     }
   }
 
-  Future<Cart> get cart async {
+  Future<void> updateCart() async {
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    await _updateCart().whenComplete(() => isLoading.value = false);
+  }
+
+  Future<void> addToCart(AddToCartRequest request) async {
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    await _addToCart(request)
+        .then((_) => _updateCart())
+        .whenComplete(() => isLoading.value = false);
+  }
+
+  Future<void> _addToCart(AddToCartRequest request) async {
+    await _dio.post(
+      '/cart/add.js',
+      data: request,
+      options: Options(
+        validateStatus: (status) => status == 302,
+      ),
+    );
+  }
+
+  Future<void> _updateCart() async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/cart.js',
       options: Options(
@@ -33,19 +62,7 @@ class HrvApi {
     );
     final data = response.data;
     if (data != null) {
-      return Cart.fromJson(data);
-    } else {
-      return Cart();
+      cart.value = Cart.fromJson(data);
     }
-  }
-
-  Future<void> addToCart(AddToCartRequest request) async {
-    await _dio.post(
-      '/cart/add.js',
-      data: request,
-      options: Options(
-        validateStatus: (status) => status == 302,
-      ),
-    );
   }
 }

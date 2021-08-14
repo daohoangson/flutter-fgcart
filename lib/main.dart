@@ -1,6 +1,6 @@
 import 'package:alice/alice.dart';
 import 'package:fgcart/hrv/api.dart';
-import 'package:fgcart/test_cases/test_cases.dart';
+import 'package:fgcart/test_cases/outfit_test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       value: alice,
       child: MaterialApp(
         title: 'Flutter Demo',
-        home: const TestCases(),
+        home: const OutfitTest(),
         navigatorKey: alice.getNavigatorKey(),
       ),
     );
