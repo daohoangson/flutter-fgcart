@@ -1,5 +1,6 @@
 import 'package:fgcart/hrv/api.dart';
 import 'package:fgcart/hrv/model.dart';
+import 'package:fgcart/test_cases/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,14 +11,15 @@ class AddToCartButton extends StatelessWidget {
   final List<int>? outfitRemove;
   final String? text;
 
-  const AddToCartButton({
-    required this.id,
+  AddToCartButton({
+    int? id,
     this.outfitAdd,
     this.outfitDrop,
     this.outfitRemove,
     this.text,
     Key? key,
-  }) : super(key: key);
+  })  : id = id ?? config.v0,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

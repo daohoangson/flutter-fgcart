@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -12,6 +14,7 @@ class HrvApi {
   final cart = ValueNotifier(Cart());
   final HrvConfig config;
   final isLoading = ValueNotifier(false);
+  final jQuery = ValueNotifier('');
 
   late final CookieJar _cookieJar;
   late final Dio _dio;
@@ -44,8 +47,14 @@ class HrvApi {
   }
 
   Future<void> _addToCart(AddToCartRequest request) async {
+    const path = '/cart/add.js';
+    jQuery.value = '${jQuery.value}\n\$.post(\n'
+        '  "$path",\n'
+        '  ${jsonEncode(request)}\n'
+        ');\n';
+
     await _dio.post(
-      '/cart/add.js',
+      path,
       data: request,
       options: Options(
         validateStatus: (status) => status == 302,

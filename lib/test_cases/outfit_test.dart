@@ -3,6 +3,7 @@ import 'package:fgcart/hrv/api.dart';
 import 'package:fgcart/widgets/add_to_cart_button.dart';
 import 'package:fgcart/widgets/cart_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_palette/flutter_palette.dart';
 import 'package:provider/provider.dart';
 
@@ -73,6 +74,10 @@ class OutfitTest extends StatelessWidget {
                         outfit: outfit,
                       )))
                   .values,
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: _Jquery(),
+              ),
             ],
           ),
         );
@@ -130,7 +135,6 @@ class _AddOutfit extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: AddToCartButton(
-                    id: config.v0,
                     outfitAdd: outfit,
                     text: 'quantity++',
                   ),
@@ -141,7 +145,6 @@ class _AddOutfit extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: AddToCartButton(
-                    id: config.v0,
                     outfitRemove: outfit,
                     text: 'quantity--',
                   ),
@@ -152,7 +155,6 @@ class _AddOutfit extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: AddToCartButton(
-                    id: config.v0,
                     outfitDrop: outfit,
                     text: 'quantity=0',
                   ),
@@ -171,4 +173,30 @@ class _AppBarItem {
   final void Function(BuildContext) onSelected;
 
   _AppBarItem(this.label, this.onSelected);
+}
+
+class _Jquery extends StatelessWidget {
+  const _Jquery({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<HrvApi>(
+      builder: (_, api, __) {
+        final jQuery = api.jQuery;
+        return AnimatedBuilder(
+          animation: jQuery,
+          builder: (_, __) => InkWell(
+            onTap: () async {
+              await Clipboard.setData(ClipboardData(text: jQuery.value));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Copied jQuery into clipboard')));
+            },
+            child: Text(
+              jQuery.value,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
