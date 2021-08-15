@@ -1,6 +1,7 @@
 import 'package:fgcart/hrv/api.dart';
 import 'package:fgcart/hrv/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'cart_item_widget.dart';
@@ -35,6 +36,7 @@ class _CartWidget extends StatelessWidget {
         ListTile(
           title: Text(cart.token ?? 'N/A'),
           subtitle: const Text('token'),
+          onTap: cart.token != null ? () => _copyCartToken(context) : null,
         ),
         ...cart.groups.map((group) => Column(
               children: [
@@ -61,5 +63,11 @@ class _CartWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _copyCartToken(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: cart.token));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied cart token into clipboard')));
   }
 }
