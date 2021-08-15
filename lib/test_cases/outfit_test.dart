@@ -8,6 +8,22 @@ import 'package:provider/provider.dart';
 
 import 'config.dart';
 
+final appBarItems = <_AppBarItem>[
+  _AppBarItem(
+    'Refresh',
+    (context) => context.read<HrvApi>().updateCart(),
+  ),
+  _AppBarItem(
+    'HTTP requests',
+    (context) => context.read<Alice>().showInspector(),
+  ),
+  _AppBarItem(
+    'Reset',
+    (context) => Navigator.pushReplacement(context,
+        PageRouteBuilder(pageBuilder: (_, __, ___) => const OutfitTest())),
+  ),
+];
+
 class OutfitTest extends StatelessWidget {
   const OutfitTest({Key? key}) : super(key: key);
 
@@ -25,15 +41,22 @@ class OutfitTest extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Outfit Test'),
             actions: [
-              Consumer<HrvApi>(
-                builder: (_, api, __) => IconButton(
-                  onPressed: () => api.updateCart(),
-                  icon: const Icon(Icons.refresh),
+              Builder(
+                builder: (context) => PopupMenuButton<String>(
+                  onSelected: (id) =>
+                      appBarItems[int.parse(id)].onSelected(context),
+                  itemBuilder: (_) => appBarItems
+                      .asMap()
+                      .map((key, value) => MapEntry(
+                            key,
+                            PopupMenuItem(
+                              value: key.toString(),
+                              child: Text(value.label),
+                            ),
+                          ))
+                      .values
+                      .toList(growable: false),
                 ),
-              ),
-              IconButton(
-                onPressed: () => context.read<Alice>().showInspector(),
-                icon: const Icon(Icons.dashboard),
               ),
             ],
           ),
@@ -141,4 +164,11 @@ class _AddOutfit extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AppBarItem {
+  final String label;
+  final void Function(BuildContext) onSelected;
+
+  _AppBarItem(this.label, this.onSelected);
 }
